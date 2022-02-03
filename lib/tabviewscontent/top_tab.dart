@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:new_pambo/constants/constant.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:new_pambo/model/data_model.dart';
 import 'package:new_pambo/providers/uploads_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -14,13 +15,11 @@ class TopTabView extends StatefulWidget {
 }
 
 class _TopTabViewState extends State<TopTabView> {
+   DataModel?  data;
   @override
   void initState(){
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      Provider.of<UploadsDataProvider>(context,listen: false).getUploads(context);
-    });
+    data = Provider.of<UploadsDataProvider>(context,listen: false).getUploads(context);
     super.initState();
-
   }
 
    String getImages(Map<String,dynamic>images){
@@ -32,7 +31,6 @@ class _TopTabViewState extends State<TopTabView> {
 
   @override
   Widget build(BuildContext context) {
-    final uploads = Provider.of<UploadsDataProvider>(context);
            return  SingleChildScrollView(
              child: Column(
                children:   [
@@ -60,8 +58,8 @@ class _TopTabViewState extends State<TopTabView> {
                                itemBuilder: (context,index){
                                  return GestureDetector(
                                    onTap: (){
-                                     print(uploads);
-                                     print(uploads.runtimeType);
+                                     print(data);
+                                     print(data.runtimeType);
                                    },
                                    child: Stack(
                                      children: [

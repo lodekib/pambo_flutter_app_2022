@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -11,11 +10,7 @@ class DataServices{
   Future<List<DataModel>>getInfo()async{
     String apiUrl = '/all/services';
     try{
-      http.Response res = await http.get(
-          Uri.parse(Constants.baseUrl+apiUrl),
-      headers: {
-            HttpHeaders.contentTypeHeader:"application/json"
-      });
+      http.Response res = await http.get(Uri.parse(Constants.baseUrl+apiUrl));
       if(res.statusCode == 200){
         List<dynamic> list = json.decode(res.body);
         return list.map((e)=>DataModel.fromJson(e)).toList();
