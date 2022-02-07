@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:new_pambo/constants/constant.dart';
 
 class MyDrawer extends StatelessWidget {
+  const MyDrawer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class MyDrawer extends StatelessWidget {
                     ]
                 ),
               ),
-              Divider(),
+              const Divider(),
               const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Text("Help and Support",style:TextStyle(fontWeight: FontWeight.bold,fontSize:15.0)),

@@ -1,7 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:new_pambo/components/bezier_container.dart';
 import 'package:new_pambo/constants/constant.dart';
+import 'package:new_pambo/network_utils/api.dart';
+import 'package:new_pambo/screens/home_screen.dart';
 import 'package:new_pambo/screens/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key ?key, this.title}) : super(key: key);
@@ -13,6 +19,23 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+ bool _isLoading = false;
+  var first_name,last_name,phone,id_number,email,password;
+  final _formKey = GlobalKey<FormState>();
+
+ _showMessage(message){
+   final snackBar=SnackBar(
+     content: Text(message),
+     action: SnackBarAction(
+       label: 'Close',
+       onPressed: (){
+
+       },
+     ),
+   );
+   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+ }
+
   Widget _backButton() {
     return InkWell(
       onTap: () {
@@ -34,7 +57,7 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget _entryField(String title, {bool isPassword = false}) {
+  Widget _entryField(String title,{bool isPassword = false}) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -47,7 +70,7 @@ class _SignupScreenState extends State<SignupScreen> {
           const SizedBox(
             height: 10,
           ),
-          TextField(
+          TextFormField(
               obscureText: isPassword,
               decoration: const InputDecoration(
                   border: InputBorder.none,
@@ -59,28 +82,35 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Widget _submitButton() {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: const EdgeInsets.symmetric(vertical: 15),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(5)),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: Colors.grey.shade200,
-                offset: const Offset(2, 4),
-                blurRadius: 5,
-                spreadRadius: 2)
-          ],
-          gradient: const LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                Color(0xFFDB228E),
-                Color(0xFFDB228E)])),
-      child: const Text(
-        'Register Now',
-        style: TextStyle(fontSize: 20, color: Colors.white),
+    return GestureDetector(
+      onTap: (){
+   if(_formKey.currentState!.validate()){
+     _register();
+   }
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                  color: Colors.grey.shade200,
+                  offset: const Offset(2, 4),
+                  blurRadius: 5,
+                  spreadRadius: 2)
+            ],
+            gradient: const LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Color(0xFFDB228E),
+                  Color(0xFFDB228E)])),
+        child: const Text(
+          'Register Now',
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
       ),
     );
   }
@@ -138,14 +168,175 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Widget _emailPasswordWidget() {
-    return Column(
-      children: <Widget>[
-        _entryField("First Name"),
-        _entryField("Last Name"),
-        _entryField("ID number"),
-        _entryField("Phone Number"),
-        _entryField("Password", isPassword: true),
-      ],
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+      Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children:  <Widget>[
+          const Text(
+            'First Name',
+            style:  TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+           const SizedBox(
+            height: 10,
+          ),
+          TextFormField(
+            validator: (firstname){
+              if(firstname!.isEmpty){
+                return 'Please provide your first name';
+              }
+              first_name = firstname;
+              return null;
+            },
+              decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  fillColor: Color(0xfff3f3f4),
+                  filled: true))
+        ],
+      ),
+    ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:  <Widget>[
+                const Text(
+                  'Last Name',
+                  style:  TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                TextFormField(
+                    validator: (lastname){
+                      if(lastname!.isEmpty){
+                        return 'Please provide your last name';
+                      }
+                      last_name = lastname;
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        fillColor: Color(0xfff3f3f4),
+                        filled: true))
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:  <Widget>[
+                const Text(
+                  'Email Address',
+                  style:  TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                TextFormField(
+                    validator: (email){
+                      if(email!.isEmpty){
+                        return 'Please provide your email address';
+                      }
+                      email = email;
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        fillColor: Color(0xfff3f3f4),
+                        filled: true))
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:  <Widget>[
+                const Text(
+                  'ID Number',
+                  style:  TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                TextFormField(
+                    validator: (idnumber){
+                      if(idnumber!.isEmpty){
+                        return 'Please provide your ID number';
+                      }
+                      id_number = idnumber;
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        fillColor: Color(0xfff3f3f4),
+                        filled: true))
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:  <Widget>[
+                const Text(
+                  'Phone Number',
+                  style:  TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                TextFormField(
+                    validator: (phonenumber){
+                      if(phonenumber!.isEmpty){
+                        return 'Please provide your phone number';
+                      }
+                      phone = phonenumber;
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        fillColor: Color(0xfff3f3f4),
+                        filled: true))
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:  <Widget>[
+                const Text(
+                  'Password',
+                  style:  TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                TextFormField(
+                  obscureText: true,
+                    validator: (userpassword){
+                      if(userpassword!.isEmpty){
+                        return 'Please provide your password';
+                      }
+                      password = userpassword;
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        fillColor: Color(0xfff3f3f4),
+                        filled: true))
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -160,7 +351,7 @@ class _SignupScreenState extends State<SignupScreen> {
             Positioned(
               top: -MediaQuery.of(context).size.height * .15,
               right: -MediaQuery.of(context).size.width * .4,
-                child: BezierContainer(),
+                child: const BezierContainer(),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -190,5 +381,44 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
     );
+
   }
+  _register() async{
+    setState(() {
+      _isLoading = true;
+    });
+
+    var data={
+      'first_name':first_name,
+      'last_name':last_name,
+      'phone':phone,
+      'id_number':id_number,
+      'email':email,
+      'password':password
+    };
+    var res = await Network().authData(data, '/register');
+    var body = json.decode(res.body);
+    if(body['success']){
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      localStorage.setString('token', json.encode(body['token']));
+      localStorage.setString('user', json.encode(body['user']));
+
+      Navigator.push(context, MaterialPageRoute(builder:(context)=>const HomeScreen()));
+    }else{
+      _showMessage(body['message']);
+    }
+
+    setState(() {
+      _isLoading= false;
+    });
+  }
+
+  validateFirstname(firstname){
+    if(firstname.isEmpty){
+      return 'Please provide your first name';
+    }
+    first_name = firstname;
+    return null;
+  }
+
 }

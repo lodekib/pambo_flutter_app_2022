@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:new_pambo/components/bezier_container.dart';
 import 'package:new_pambo/constants/constant.dart';
+import 'package:new_pambo/network_utils/api.dart';
+import 'package:new_pambo/screens/home_screen.dart';
 import 'package:new_pambo/screens/signup_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key, this.title}) : super(key: key);
@@ -13,6 +18,28 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool _isLoading = false;
+  var password;
+  var email;
+  final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  TextEditingController emailController =TextEditingController();
+  TextEditingController passwordController =TextEditingController();
+
+  _showMessage(message){
+    final snackBar=SnackBar(
+        content: Text(message),
+      action: SnackBarAction(
+        label: 'Close',
+        onPressed: (){
+
+        },
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+
   Widget _backButton() {
     return InkWell(
       onTap: () {
@@ -34,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _entryField(String title, {bool isPassword = false}) {
+  Widget _entryField(String title,TextEditingController controller, {bool isPassword = false}) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -47,40 +74,63 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(
             height: 10,
           ),
-          TextField(
+          TextFormField(
+            validator: isPassword ?
+            (passwordValue){
+                if(passwordValue!.isEmpty){
+                  return 'Please provide your password';
+                }
+                password = passwordValue;
+                return null;
+            }:(emailValue){
+                if(emailValue!.isEmpty){
+                  return 'Please provide your email address';
+                }
+                email = emailValue;
+                return null;
+            },
+            controller: controller,
             cursorColor: Constants.pamboprimaryColor,
               obscureText: isPassword,
               decoration: const InputDecoration(
                   border: InputBorder.none,
                   fillColor: Color(0xfff3f3f4),
                   filled: true
-              ))
+              ),
+          )
         ],
       ),
     );
   }
 
   Widget _submitButton() {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: const EdgeInsets.symmetric(vertical: 15),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(5)),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: Colors.grey.shade200,
-                offset: const Offset(2, 4),
-                blurRadius: 5,
-                spreadRadius: 2)
-          ],
-          gradient: const LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [Color(0xFFDB228E), Color(0xFFDB228E)])),
-      child: const Text(
-        'Login',
-        style: TextStyle(fontSize: 20, color: Colors.white),
+    return GestureDetector(
+      onTap: (){
+        if(_formKey.currentState!.validate()){
+          _login();
+        }
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                  color: Colors.grey.shade200,
+                  offset: const Offset(2, 4),
+                  blurRadius: 5,
+                  spreadRadius: 2)
+            ],
+            gradient: const LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [Color(0xFFDB228E), Color(0xFFDB228E)])),
+        child: const Text(
+          'Login',
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
       ),
     );
   }
@@ -218,11 +268,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _emailPasswordWidget() {
-    return Column(
-      children: <Widget>[
-        _entryField("Email Address"),
-        _entryField("Password", isPassword: true),
-      ],
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+          _entryField("Email Address",emailController),
+          _entryField("Password", passwordController,isPassword: true),
+        ],
+      ),
     );
   }
 
@@ -230,6 +283,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
+      key:_scaffoldKey,
         body: Container(
           height: height,
           child: Stack(
@@ -270,4 +324,33 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ));
   }
+
+
+  void _login() async{
+    setState(() {
+      _isLoading= true;
+    });
+    var data = {
+      'email':email,
+      'password':password
+    };
+
+    var res = await Network().authData(data,'/login');
+    var body =json.decode(res.body);
+    if(body['success']){
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      localStorage.setString('token', json.encode(body['token']));
+      localStorage.setString('user',json.encode(body['user']));
+      Navigator.push(
+        context,MaterialPageRoute(builder: (context)=>const HomeScreen())
+      );
+
+    }else{
+      _showMessage(body['message']);
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
 }

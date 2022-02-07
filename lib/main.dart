@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:new_pambo/providers/categories/fragrance_provider.dart';
 import 'package:new_pambo/providers/uploads_provider.dart';
 import 'package:new_pambo/screens/home_screen.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +11,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider<UploadsDataProvider>(create: (_)=>UploadsDataProvider(),),
-
+        ChangeNotifierProvider<FragranceDataProvider>(create: (_)=>FragranceDataProvider(),),
       ],
       child: const MyApp(),
     )

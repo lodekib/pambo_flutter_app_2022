@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:new_pambo/constants/constant.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:new_pambo/model/data_model.dart';
 import 'package:new_pambo/providers/uploads_provider.dart';
+import 'package:new_pambo/screens/details_screen.dart';
 import 'package:provider/provider.dart';
 
 class TopTabView extends StatefulWidget {
@@ -15,11 +15,11 @@ class TopTabView extends StatefulWidget {
 }
 
 class _TopTabViewState extends State<TopTabView> {
-   DataModel?  data;
   @override
   void initState(){
-    data = Provider.of<UploadsDataProvider>(context,listen: false).getUploads(context);
     super.initState();
+    final data = Provider.of<UploadsDataProvider>(context,listen: false);
+      data.fetchData(context);
   }
 
    String getImages(Map<String,dynamic>images){
@@ -31,7 +31,8 @@ class _TopTabViewState extends State<TopTabView> {
 
   @override
   Widget build(BuildContext context) {
-           return  SingleChildScrollView(
+    final data = Provider.of<UploadsDataProvider>(context);
+           return  data.dataModel.isNotEmpty ? SingleChildScrollView(
              child: Column(
                children:   [
                  //  TOP SERVICES
@@ -53,13 +54,12 @@ class _TopTabViewState extends State<TopTabView> {
                            height: MediaQuery.of(context).size.height*.3,
                            width: double.maxFinite,
                            child:ListView.builder(
-                               itemCount:3,
+                               itemCount:data.dataModel.isNotEmpty ? data.dataModel.take(2).length :0,
                                scrollDirection: Axis.horizontal,
                                itemBuilder: (context,index){
                                  return GestureDetector(
                                    onTap: (){
-                                     print(data);
-                                     print(data.runtimeType);
+                                     print(data.dataModel[index].image.runtimeType);
                                    },
                                    child: Stack(
                                      children: [
@@ -98,13 +98,13 @@ class _TopTabViewState extends State<TopTabView> {
                                            crossAxisAlignment: CrossAxisAlignment.start,
                                            mainAxisAlignment: MainAxisAlignment.end,
                                            children:  [
-                                             const Text("sampletitle",style:  TextStyle(color: Colors.white,fontSize: 12),),
-                                            const  Text('Price ranges',style:  TextStyle(color:Constants.pamboprimaryColor,fontSize: 12),),
+                                              Text(data.dataModel[index].title ,style:  const TextStyle(color: Colors.white,fontSize: 12),),
+                                              Text('KSH '+data.dataModel[index].price_from+' - '+data.dataModel[index].price_to,style: const TextStyle(color:Constants.pamboprimaryColor,fontSize: 12),),
                                              Row(
                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                               children:   const [
-                                                 Icon(Icons.location_on,color: Colors.blueGrey,size: 15,),
-                                                 Text('location',style: TextStyle(color:Colors.blueGrey,fontSize: 12))
+                                               children:    [
+                                                 const Icon(Icons.location_on,color: Colors.blueGrey,size: 15,),
+                                                 Text(data.dataModel[index].location,style: const TextStyle(color:Colors.blueGrey,fontSize: 12))
                                                ],
                                              ),
 
@@ -130,7 +130,7 @@ class _TopTabViewState extends State<TopTabView> {
                        physics: const ClampingScrollPhysics(),
                        scrollDirection: Axis.vertical,
 // TODO :Morning Brian remember to change the range from 10 to some arbitrary value like 50,100....
-                       itemCount: 2,
+                       itemCount: data.dataModel.isNotEmpty ? data.dataModel.sublist(1).length :0,
                        itemBuilder: (context,index){
                          return GestureDetector(
                            onTap: (){
@@ -172,15 +172,15 @@ class _TopTabViewState extends State<TopTabView> {
                                          crossAxisAlignment: CrossAxisAlignment.start,
                                          children:  [
                                            Text(
-                                               'title',
-                                               maxLines:getTitle('title').length > 30 ? 2 :1,
+                                               data.dataModel[index].title,
+                                               maxLines:getTitle(data.dataModel[index].title).length > 30 ? 2 :1,
                                                style: const TextStyle(
                                                    fontSize: 13,
                                                    fontWeight: FontWeight.bold,
                                                    overflow:TextOverflow.ellipsis
                                                )),
                                            Padding(
-                                             padding: getTitle('title').length > 30 ? const EdgeInsets.only(top:4.0): const EdgeInsets.only(top:7),
+                                             padding: getTitle(data.dataModel[index].title).length > 30 ? const EdgeInsets.only(top:4.0): const EdgeInsets.only(top:7),
                                              child: Column(
                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                children: [
@@ -206,22 +206,22 @@ class _TopTabViewState extends State<TopTabView> {
                                                      ],
                                                    ),
                                                  ),
-                                                  const Padding(
-                                                   padding:EdgeInsets.only(bottom: 2.0,top: 4),
-                                                   child: Text('price Range',style: TextStyle(color:Constants.pamboprimaryColor,fontWeight: FontWeight.bold,fontSize: 13),),
+                                                   Padding(
+                                                   padding:const EdgeInsets.only(bottom: 2.0,top: 4),
+                                                   child: Text(data.dataModel[index].price_from+' - '+data.dataModel[index].price_to,style: const TextStyle(color:Constants.pamboprimaryColor,fontWeight: FontWeight.bold,fontSize: 13),),
                                                  ),
                                                  Padding(
                                                    padding: const EdgeInsets.only(top:4.0,bottom: 2.0),
                                                    child: Row(
                                                      crossAxisAlignment: CrossAxisAlignment.center,
                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                     children:  const [
-                                                       Icon(Icons.location_on,color:Colors.grey,),
+                                                     children:   [
+                                                       const Icon(Icons.location_on,color:Colors.grey,),
                                                        Flexible(
                                                          child: Text(
-                                                           'location',
+                                                           data.dataModel[index].location,
                                                            overflow: TextOverflow.ellipsis,
-                                                           style:TextStyle(fontSize: 13,color: Colors.grey),),
+                                                           style: const TextStyle(fontSize: 13,color: Colors.grey),),
                                                        )
                                                      ],
                                                    ),
@@ -233,7 +233,7 @@ class _TopTabViewState extends State<TopTabView> {
                                                      children: [
                                                        OutlinedButton(
                                                            onPressed: () {
-
+                                                             Navigator.push(context, MaterialPageRoute(builder:(context)=>DetailsPage(data: data.dataModel[index])));
                                                            },
                                                            child: const Text('View Service',style: TextStyle(color:Constants.pamboprimaryColor),)
                                                        ),
@@ -257,6 +257,10 @@ class _TopTabViewState extends State<TopTabView> {
                  //   TOP SERVICES
                ],
              ),
+           ) : const Center(
+             child: Text('No uploads Available at the moment',style:TextStyle(
+               color:Constants.pamboprimaryColor
+             )),
            );
   }
 }

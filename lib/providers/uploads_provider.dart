@@ -1,21 +1,35 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
-import 'package:new_pambo/services/data_services.dart';
+import 'package:new_pambo/constants/constant.dart';
+import 'package:new_pambo/model/data_model.dart';
+import 'package:http/http.dart' as http;
 class UploadsDataProvider with ChangeNotifier{
-var uploads;
-bool loading = false;
-
-DataServices dataServices= DataServices();
+    List<DataModel> dataModel= [];
 
 
-getUploads(context) async{
-  loading =  true;
-  uploads = await dataServices.getInfo();
-  print("INSIDE PROVIDER");
-  print(uploads);
-  print('INSIDE PROVIDER');
-  loading =  false;
-  notifyListeners();
+fetchData(context) async{
+dataModel = await getData(context);
+notifyListeners();
 }
+
+Future<List<DataModel>> getData(context) async{
+  String apiUrl = '/all/services';
+  try{
+     final response = await http.get(Uri.parse(Constants.baseUrl+apiUrl));
+     if(response.statusCode == 200){
+       List<dynamic> data = json.decode(response.body);
+        return data.map((datum) => DataModel.fromJson(datum)).toList();
+     }else{
+        throw Exception('Not Sure of the issue');
+     }
+  }catch(e){
+     throw Exception(e);
+  }
+}
+
+
+
 
 
 

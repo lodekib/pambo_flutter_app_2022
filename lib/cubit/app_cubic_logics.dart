@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_pambo/cubit/app_cubit_states.dart';
-import 'package:new_pambo/screens/details_screen.dart';
 import 'package:new_pambo/screens/home_screen.dart';
 import 'package:new_pambo/screens/loading_screen.dart';
 import 'app_cubits.dart';
@@ -23,8 +22,6 @@ class _AppCubitLogicState extends State<AppCubitLogic> {
              return const LoadingScreen();
           }if(state is LoadedState){
             return  const HomeScreen();
-          }if(state is DetailState){
-           return const  DetailsPage();
          }else{
            return const Center(child:Text('No state encountered'));
          }

@@ -2,14 +2,13 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:new_pambo/cubit/app_cubit_states.dart';
 import 'package:new_pambo/model/data_model.dart';
-import 'package:new_pambo/services/data_services.dart';
 
 class AppCubits extends Cubit<CubitStates>{
   AppCubits({required this.data}) : super(InitialState()) {
     emit(LoadingState());
   }
 
-  final DataServices data;
+  final  data;
   late final uploads;
   late final fragrances;
 

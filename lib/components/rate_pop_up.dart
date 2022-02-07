@@ -4,6 +4,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:new_pambo/constants/constant.dart';
 
 class RateService extends StatefulWidget {
+  const RateService({Key? key}) : super(key: key);
 
   @override
   _RateServiceState createState() => _RateServiceState();

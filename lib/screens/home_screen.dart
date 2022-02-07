@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:new_pambo/components/drawer.dart';
 import 'package:new_pambo/components/search_filter.dart';
 import 'package:new_pambo/constants/constant.dart';
+import 'package:new_pambo/screens/checkAuth.dart';
 import 'package:new_pambo/screens/login_screen.dart';
-import 'package:new_pambo/screens/upload_screen.dart';
 import 'package:new_pambo/tab_components/tabs.dart';
 import 'package:new_pambo/tabviewscontent/braids_wigs.dart';
 import 'package:new_pambo/tabviewscontent/fragrance_tab.dart';
@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen>  with SingleTickerProviderState
   int currentIndex=0;
 
   List  <Widget>pages = <Widget>[
-    const UploadScreen(),
+    const CheckAuthentication(),
     const LoginScreen()
   ];
 
@@ -46,7 +46,8 @@ class _HomeScreenState extends State<HomeScreen>  with SingleTickerProviderState
     return DefaultTabController(
       length: 8,
       child: Scaffold(
-        drawer:  MyDrawer(),
+        backgroundColor: Colors.white,
+        drawer:  const MyDrawer(),
         appBar: PreferredSize(
          preferredSize: const Size.fromHeight(120),
          child: AppBar(

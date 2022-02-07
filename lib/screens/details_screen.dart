@@ -3,22 +3,23 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_pambo/components/rate_pop_up.dart';
 import 'package:new_pambo/constants/constant.dart';
-import 'package:new_pambo/cubit/app_cubit_states.dart';
-import 'package:new_pambo/cubit/app_cubits.dart';
+import 'package:new_pambo/model/data_model.dart';
 import 'package:readmore/readmore.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class DetailsPage extends StatefulWidget {
-  const DetailsPage({Key? key}) : super(key: key);
+// class DetailsPage extends StatefulWidget {
+//   final DataModel data;
+//   const DetailsPage({Key? key,required this.data}) : super(key: key);
+//
+//   @override
+//   _DetailsPageState createState() => _DetailsPageState();
+// }
 
-  @override
-  _DetailsPageState createState() => _DetailsPageState();
-}
-
-class _DetailsPageState extends State<DetailsPage> {
+class DetailsPage extends StatelessWidget{
+  final DataModel data;
+   const DetailsPage({Key? key,required this.data}) : super(key: key);
 
   List getImages(Map<String,dynamic>images){
     return json.decode(images['url']);
@@ -27,12 +28,9 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppCubits,CubitStates>(
-      builder: (context,state){
-        DetailState detail = state as DetailState;
         return Scaffold(
             body:SingleChildScrollView(
-              child: Column(
+              child: data != null ? Column(
                 children: [
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
@@ -43,7 +41,7 @@ class _DetailsPageState extends State<DetailsPage> {
                           left: 0,
                           right: 0,
                           child:CarouselSlider.builder(
-                              itemCount: getImages(detail.upload.image).length,
+                              itemCount: 1,
                               options: CarouselOptions(
                                 autoPlay: true,
                                 enlargeCenterPage: true,
@@ -58,7 +56,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                    child:CachedNetworkImage(
                                      fit: BoxFit.cover,
                                      filterQuality: FilterQuality.medium,
-                                     imageUrl:'https://51a6-197-248-49-247.ngrok.io/storage/uploads/'+getImages(detail.upload.image)[itemIndex],
+                                     imageUrl:'https://51a6-197-248-49-247.ngrok.io/storage/uploads/',
                                      progressIndicatorBuilder: (context,url,downloadProgress)
                                      =>const Center(
                                        child:  CircularProgressIndicator(
@@ -81,7 +79,7 @@ class _DetailsPageState extends State<DetailsPage> {
                             top: 40,
                             child:IconButton(
                               onPressed: () {
-                                BlocProvider.of<AppCubits>(context).goHome();
+                                Navigator.pop(context);
                               },
                               icon: const Icon(Icons.arrow_back_ios),
                               color: Constants.pamboprimaryColor,
@@ -112,7 +110,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                             padding: const EdgeInsets.only(right: 8.0),
                                             child: ElevatedButton(
                                               onPressed: () async{
-                                                 await canLaunch('tel://'+detail.upload.phone) ? launch('tel://'+detail.upload.phone) : ScaffoldMessenger.of(context).showSnackBar(
+                                                 await canLaunch('tel://'+data.phone) ? launch('tel://'+data.phone) : ScaffoldMessenger.of(context).showSnackBar(
                                                    const SnackBar(content:Text('Unable to launch phone Dial'))
                                                  );
                                               },
@@ -131,10 +129,14 @@ class _DetailsPageState extends State<DetailsPage> {
                                             padding: const EdgeInsets.only(left:8.0,right: 2),
                                             child: ElevatedButton(
                                               onPressed: () async {
-                                                var phone = '254'+detail.upload.phone.substring(1);
+                                                var phone = '254'+data.phone.substring(1);
                                                 await canLaunch('whatsapp://send?phone=$phone') ?
                                                 launch('whatsapp://send?phone=$phone') : ScaffoldMessenger.of(context).showSnackBar(
-                                                    const SnackBar(content: Text('Unable to launch Whatsapp Messenger'),));
+                                                    const SnackBar(
+                                                      backgroundColor: Constants.pamboprimaryColor,
+                                                      elevation: 2,
+                                                      padding: EdgeInsets.all(8),
+                                                      content: Text('Unable to launch Whatsapp Messenger'),));
                                               },
                                               child:Image.asset('assets/images/icons8-whatsapp-24.png'),
                                               style: ButtonStyle(
@@ -151,8 +153,8 @@ class _DetailsPageState extends State<DetailsPage> {
                                       child: Row(
                                         children:  [
                                           Text(
-                                            detail.upload.title,
-                                            style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                                            data.title,
+                                            style:  const TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
                                         ],
                                       ),
                                     ),
@@ -173,7 +175,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                             ],
                                           ),
                                         ),
-                                         Text('KSH '+detail.upload.price_from+' - KSH '+detail.upload.price_to,
+                                          Text('KSH '+data.price_from+' - '+data.price_to,
                                           style:const TextStyle(color:Colors.green,fontWeight: FontWeight.bold),)
                                       ],
                                     ),
@@ -182,10 +184,10 @@ class _DetailsPageState extends State<DetailsPage> {
                                         Padding(
                                           padding: const EdgeInsets.only(top:8.0),
                                           child: Row(
-                                            children:   [
-                                              const Icon(Icons.location_on,color:Colors.grey,),
-                                             const  SizedBox(width: 5,),
-                                              Text(detail.upload.sub_county+' , '+detail.upload.location,style:const TextStyle(fontSize: 13,color: Colors.grey),)
+                                            children:  [
+                                            const  Icon(Icons.location_on,color:Colors.grey,),
+                                             const SizedBox(width: 5,),
+                                              Text(data.location,style:const TextStyle(fontSize: 13,color: Colors.grey),)
                                             ],
                                           ),
                                         ),
@@ -213,7 +215,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                           ],
                                         ),
                                          ReadMoreText(
-                                          detail.upload.description,
+                                          data.description,
                                           style:const TextStyle(color:Colors.black,fontWeight: FontWeight.w300,fontSize: 13),
                                           trimLines: 7,
                                           trimLength: 5,
@@ -266,7 +268,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                                               ),
                                                             ),
                                                           ),
-                                                          RateService()
+                                                          const RateService()
                                                         ],
                                                         ),
                                                       );
@@ -384,10 +386,9 @@ class _DetailsPageState extends State<DetailsPage> {
                     ),
                   ),
                 ],
-              ),
+              ) : const Text('Unable to get Data')
             )
         );
-      },
-    );
+
   }
 }
