@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:new_pambo/constants/constant.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:new_pambo/helpers/helper_functions.dart';
 import 'package:new_pambo/providers/uploads_provider.dart';
 import 'package:new_pambo/screens/details_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class TopTabView extends StatefulWidget {
   const TopTabView({Key? key}) : super(key: key);
@@ -15,6 +17,7 @@ class TopTabView extends StatefulWidget {
 }
 
 class _TopTabViewState extends State<TopTabView> {
+
   @override
   void initState(){
     super.initState();
@@ -24,9 +27,6 @@ class _TopTabViewState extends State<TopTabView> {
 
    String getImages(Map<String,dynamic>images){
      return json.decode(images['url'])[0];
-   }
-   String getTitle(title){
-     return title;
    }
 
   @override
@@ -59,7 +59,7 @@ class _TopTabViewState extends State<TopTabView> {
                                itemBuilder: (context,index){
                                  return GestureDetector(
                                    onTap: (){
-                                     print(data.dataModel[index].image.runtimeType);
+                                     print(data.dataModel.runtimeType);
                                    },
                                    child: Stack(
                                      children: [
@@ -76,11 +76,11 @@ class _TopTabViewState extends State<TopTabView> {
                                              fit: BoxFit.cover,
                                              imageUrl:'',
                                              progressIndicatorBuilder: (context,url,downloadProgress)
-                                             =>const Center(
-                                               child:  CircularProgressIndicator(
-                                                 strokeWidth: 0.5,
+                                             => const Center(
+                                               child: SpinKitCircle(
+                                                 size: 40,
                                                  color: Constants.pamboprimaryColor,
-                                               ),
+                                               )
                                              ),
                                              errorWidget: (context,url,error)=>Center(child: Column(
                                                children: const [
@@ -99,7 +99,7 @@ class _TopTabViewState extends State<TopTabView> {
                                            mainAxisAlignment: MainAxisAlignment.end,
                                            children:  [
                                               Text(data.dataModel[index].title ,style:  const TextStyle(color: Colors.white,fontSize: 12),),
-                                              Text('KSH '+data.dataModel[index].price_from+' - '+data.dataModel[index].price_to,style: const TextStyle(color:Constants.pamboprimaryColor,fontSize: 12),),
+                                              Text('KSH '+data.dataModel[index].price_from+' - KSH '+data.dataModel[index].price_to,style: const TextStyle(color:Constants.pamboprimaryColor,fontSize: 12),),
                                              Row(
                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                children:    [
@@ -134,6 +134,7 @@ class _TopTabViewState extends State<TopTabView> {
                        itemBuilder: (context,index){
                          return GestureDetector(
                            onTap: (){
+                             print(data.dataModel[index].reviews);
                            },
                            child: Container(
                              height: MediaQuery.of(context).size.height*.28,
@@ -149,11 +150,11 @@ class _TopTabViewState extends State<TopTabView> {
                                            fit: BoxFit.cover,
                                            imageUrl:'',
                                            progressIndicatorBuilder: (context,url,downloadProgress)
-                                           =>const Center(
-                                             child:  CircularProgressIndicator(
-                                               strokeWidth: 0.5,
+                                           => const Center(
+                                             child:  SpinKitCircle(
+                                               size: 40,
                                                color: Constants.pamboprimaryColor,
-                                             ),
+                                             )
                                            ),
                                            errorWidget: (context,url,error)=>Center(child: Column(
                                              children: const [
@@ -173,14 +174,13 @@ class _TopTabViewState extends State<TopTabView> {
                                          children:  [
                                            Text(
                                                data.dataModel[index].title,
-                                               maxLines:getTitle(data.dataModel[index].title).length > 30 ? 2 :1,
                                                style: const TextStyle(
                                                    fontSize: 13,
                                                    fontWeight: FontWeight.bold,
                                                    overflow:TextOverflow.ellipsis
                                                )),
                                            Padding(
-                                             padding: getTitle(data.dataModel[index].title).length > 30 ? const EdgeInsets.only(top:4.0): const EdgeInsets.only(top:7),
+                                             padding: const EdgeInsets.only(top:7),
                                              child: Column(
                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                children: [
@@ -190,7 +190,7 @@ class _TopTabViewState extends State<TopTabView> {
                                                      children: [
                                                        RatingBar.builder(
                                                          itemSize: 20,
-                                                         initialRating: 3.5,
+                                                         initialRating: data.dataModel[index].reviews.isNotEmpty ? Helper().reviews(data.dataModel[index].reviews):0.0,
                                                          minRating: 1,
                                                          ignoreGestures: true,
                                                          direction: Axis.horizontal,
@@ -202,13 +202,13 @@ class _TopTabViewState extends State<TopTabView> {
                                                          ), onRatingUpdate: (double value) {  },
                                                        ),
                                                        const SizedBox(width: 5,),
-                                                       const Text('(3.5)',style:Constants.pambocardrateTextStyle),
+                                                        Text(data.dataModel[index].reviews.isNotEmpty ? Helper().reviews(data.dataModel[index].reviews).toString():'(0.0)',style:Constants.pambocardrateTextStyle),
                                                      ],
                                                    ),
                                                  ),
                                                    Padding(
                                                    padding:const EdgeInsets.only(bottom: 2.0,top: 4),
-                                                   child: Text(data.dataModel[index].price_from+' - '+data.dataModel[index].price_to,style: const TextStyle(color:Constants.pamboprimaryColor,fontWeight: FontWeight.bold,fontSize: 13),),
+                                                   child: Text('KSH '+data.dataModel[index].price_from+' - KSH '+data.dataModel[index].price_to,style: const TextStyle(color:Constants.pamboprimaryColor,fontWeight: FontWeight.bold,fontSize: 13),),
                                                  ),
                                                  Padding(
                                                    padding: const EdgeInsets.only(top:4.0,bottom: 2.0),
@@ -258,9 +258,11 @@ class _TopTabViewState extends State<TopTabView> {
                ],
              ),
            ) : const Center(
-             child: Text('No uploads Available at the moment',style:TextStyle(
-               color:Constants.pamboprimaryColor
-             )),
+             child: SpinKitSpinningLines(
+               color: Constants.pamboprimaryColor,
+               size: 50.0,
+             )
            );
   }
+
 }

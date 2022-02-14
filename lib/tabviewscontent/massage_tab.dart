@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:new_pambo/constants/constant.dart';
+import 'package:new_pambo/model/data_model.dart';
+import 'package:new_pambo/providers/categories/massage_provider.dart';
+import 'package:new_pambo/screens/category_screens/view_categories.dart';
+import 'package:provider/provider.dart';
 
 class MassagelistScreen extends StatefulWidget {
   const MassagelistScreen({Key? key}) : super(key: key);
@@ -10,17 +14,53 @@ class MassagelistScreen extends StatefulWidget {
 
 class _MassagelistScreenState extends State<MassagelistScreen> {
   @override
+  void initState(){
+    final massages = Provider.of<MassageDataProvider>(context,listen:false);
+    massages.getMassages(context);
+    super.initState();
+  }
+
+  String countMassages(dynamic vals ,int index){
+    if(vals.elementAt(index).length > 1){
+      return vals.elementAt(index).length.toString()+' services';
+    }else if(vals.elementAt(index).length == 1){
+      return vals.elementAt(index).length.toString()+' service';
+    }else{
+      return 'No services available';
+    }
+  }
+
+  List<DataModel> massagesToModel(List<dynamic> massagesToConvert){
+    return massagesToConvert.map((frag) => DataModel.fromJson(frag)).toList();
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: Constants.massagelist.length,
+    final massages = Provider.of<MassageDataProvider>(context,listen: false);
+    return  ListView.builder(
+        itemCount: massages.massageData.length,
         itemBuilder: (BuildContext context, int index){
           return Card(
               color: (index % 2==0)?Colors.white:Colors.grey[100],
               child:ListTile(
-                title: Text(Constants.massagelist[index]['subcategory'].toString()),
-                subtitle: Text(Constants.massagelist[index]['ads'].toString(),style: const TextStyle(fontSize: 13),),
+                title: Text(massages.massageData.keys.elementAt(index)),
+                subtitle:  Text(countMassages(massages.massageData.values, index),style: const TextStyle(fontSize: 13),),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: (){
+                onTap: () async{
+                  massages.massageData.values.elementAt(index).length >0 ?
+                  await Navigator.push(context,
+                      MaterialPageRoute(
+                          builder:(_)=>
+                              CategoricalViews(
+                                  data: massagesToModel(massages.massageData.values.elementAt(index)))))
+                      :ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          duration: Duration(seconds: 1),
+                          backgroundColor: Constants.pamboprimaryColor,
+                          content: Text('No services')));
                 },
               )
           );

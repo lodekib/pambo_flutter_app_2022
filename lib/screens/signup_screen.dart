@@ -239,11 +239,11 @@ class _SignupScreenState extends State<SignupScreen> {
                   height: 10,
                 ),
                 TextFormField(
-                    validator: (email){
-                      if(email!.isEmpty){
+                    validator: (this_email){
+                      if(this_email!.isEmpty){
                         return 'Please provide your email address';
                       }
-                      email = email;
+                      email = this_email;
                       return null;
                     },
                     decoration: const InputDecoration(
@@ -388,24 +388,34 @@ class _SignupScreenState extends State<SignupScreen> {
       _isLoading = true;
     });
 
-    var data={
+    var res = await Network().authData(<String,String>{
       'first_name':first_name,
       'last_name':last_name,
       'phone':phone,
       'id_number':id_number,
       'email':email,
       'password':password
-    };
-    var res = await Network().authData(data, '/register');
-    var body = json.decode(res.body);
-    if(body['success']){
+    }, '/register');
+    var resbody = json.decode(res.body);
+    if(resbody['success']){
       SharedPreferences localStorage = await SharedPreferences.getInstance();
-      localStorage.setString('token', json.encode(body['token']));
-      localStorage.setString('user', json.encode(body['user']));
+      localStorage.setString('token', json.encode(resbody['token']));
+      localStorage.setString('user', json.encode(resbody['user']));
 
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Registration successful'),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Constants.pamboprimaryColor,
+      ));
+      print(resbody['user']);
       Navigator.push(context, MaterialPageRoute(builder:(context)=>const HomeScreen()));
     }else{
-      _showMessage(body['message']);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Unable to register'),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Constants.pamboprimaryColor,
+      ));
+      print(resbody['message']);
     }
 
     setState(() {

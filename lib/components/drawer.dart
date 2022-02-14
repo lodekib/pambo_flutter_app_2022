@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:new_pambo/constants/constant.dart';
+import 'package:new_pambo/network_utils/api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({Key? key}) : super(key: key);
@@ -12,7 +15,6 @@ class MyDrawer extends StatelessWidget {
             children:[
               InkWell(
                 onTap:(){
-                  print("Hello");
                 },
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -80,12 +82,31 @@ class MyDrawer extends StatelessWidget {
                 trailing: Icon(Icons.arrow_forward_ios,size: 10.0,),
               ),
               const Divider(),
-              const ListTile(
-                leading:Icon(Icons.logout_outlined,color:Constants.pamboprimaryColor,size: 30,),
-                title: Text("Log Out",),
-                trailing: Icon(Icons.arrow_forward_ios,size: 10.0,),
+               GestureDetector(
+                 onTap:() async{
+                   SharedPreferences localStorage = await SharedPreferences.getInstance();
+                   if(localStorage.getString('token') != null){
+                     print(localStorage.getString('token'));
+                     var res = await Network().getData('/logout');
+                     var body = json.decode(res.body);
+                     if(body['success']){
+                       SharedPreferences localStorage = await SharedPreferences.getInstance();
+                       localStorage.remove('token');
+                       localStorage.remove('user');
+                       print(body);
+                     }else {
+                       print(body);
+                     }
+                   }else{
+                     print('You are not signed In yet');
+                   }
+                 },
+                 child: const ListTile(
+                  leading:Icon(Icons.logout_outlined,color:Constants.pamboprimaryColor,size: 30,),
+                  title: Text("Log Out",),
+                  trailing: Icon(Icons.arrow_forward_ios,size: 10.0,),
               ),
-
+               ),
             ]
         ),
       ),

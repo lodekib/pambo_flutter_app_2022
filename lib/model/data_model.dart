@@ -1,19 +1,23 @@
 class DataModel{
+  int id;
+  List reviews;
   String id_number,category,title,county,
       sub_county,location,price_from,price_to,
       email,phone,description,sponsorship;
   Map<String,dynamic>image;
 
   DataModel({
+    required this.id,
     required this.id_number,required this.category,
     required this.title,required this.county,required this.sub_county,
     required this.location,required this.price_from,required this.price_to,
     required this.email,required this.phone,required this.description,
-    required this.sponsorship,required this.image
+    required this.sponsorship,required this.image,required this.reviews
 });
 
   factory DataModel.fromJson(Map<String,dynamic> json){
     return DataModel(
+      id:json["id"],
       id_number: json["id_number"],
       category: json["category"],
       title: json["title"],
@@ -26,7 +30,8 @@ class DataModel{
       phone: json["phone"],
       description: json["description"],
       sponsorship: json["sponsorship"],
-      image:json["image"]
+      image:json["image"],
+      reviews:json["reviews"]
     );
   }
 

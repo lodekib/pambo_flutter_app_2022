@@ -330,24 +330,32 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading= true;
     });
-    var data = {
+
+
+    var res = await Network().authData(<String,String>{
       'email':email,
       'password':password
-    };
+    },'/login');
 
-    var res = await Network().authData(data,'/login');
-    var body =json.decode(res.body);
-    if(body['success']){
+
+    var resbody =json.decode(res.body);
+    // print(resbody);
+      if(resbody['success']){
       SharedPreferences localStorage = await SharedPreferences.getInstance();
-      localStorage.setString('token', json.encode(body['token']));
-      localStorage.setString('user',json.encode(body['user']));
+      localStorage.setString('token', json.encode(resbody['token']));
+      localStorage.setString('user',json.encode(resbody['user']));
+      print('LOGGED IN USER CURRENT TOKEN');
+      print(localStorage.getString('token'));
+      print(localStorage.getString('token').runtimeType);
+      print('LOGGED IN USER CURRENT TOKEN');
       Navigator.push(
         context,MaterialPageRoute(builder: (context)=>const HomeScreen())
       );
-
+      print(resbody['message']);
     }else{
-      _showMessage(body['message']);
-    }
+
+      print(resbody['message']);
+      }
     setState(() {
       _isLoading = false;
     });

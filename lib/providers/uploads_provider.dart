@@ -19,18 +19,15 @@ Future<List<DataModel>> getData(context) async{
      final response = await http.get(Uri.parse(Constants.baseUrl+apiUrl));
      if(response.statusCode == 200){
        List<dynamic> data = json.decode(response.body);
+       print(data);
         return data.map((datum) => DataModel.fromJson(datum)).toList();
      }else{
         throw Exception('Not Sure of the issue');
      }
   }catch(e){
+    print(e.toString());
      throw Exception(e);
   }
 }
-
-
-
-
-
 
 }

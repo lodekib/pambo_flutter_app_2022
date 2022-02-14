@@ -10,7 +10,7 @@ class Constants{
       color:Colors.green,fontWeight: FontWeight.bold
   );
 
-  static String baseUrl = 'https://6e0b-197-248-49-247.ngrok.io/api/v1';
+  static String baseUrl = 'https://0405-197-248-49-247.ngrok.io/api/v1';
 
   static const Color  pamboscaffoldColor =  Color(0xFFFFFFFF);
   static Color pambounselectedtabColor = Colors.grey;
@@ -44,8 +44,6 @@ class Constants{
 
  static   List<String> categories =  ['Fragrance','Hair Dressing','Make Up','Braids & Wigs','Skin Care','Massage','Jewellery'];
 
-
-
  List <String> counties =["Nairobi","Machakos","Lamu","Kitui","Taita Taveta","Mombasa","Kilifi","Kiambu","Samburu","Bungoma","Vihiga",
     "Kakamega","Kisumu","Migori","Homa Bay","Muranga","Nyandarua","Nakuru","Kericho","Nandi","Turkana","West Pokot","Marsabit",
     "Kirinyaga","Narok","Meru","Tharaka Nithi","Kajiado","Uasin Gishu","Tana River","Mandera","Trans Nzoia","Bomet","Embu","Makueni",
@@ -53,241 +51,6 @@ class Constants{
   ];
 
 
-   static List<Map<String, String>> fragrancesubcategory=[
-    {
-      "subcategory":"Body Spray",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Deodorants",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Perfumes",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Air Fresheners",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Citrus",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Fruity",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Floral",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Woody",
-      "ads":"0 ads",
-    },
-  ];
-
-  static List<Map<String, dynamic>> jewellerylist=[
-    {
-      "subcategory":"Earings",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Bracelets",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Necklace",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Bangles",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Belly Chains",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Body Piercing",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Tattoos and Body art",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Jewellery Engraving",
-      "ads":"0 ads",
-    },
-  ];
-
-  static  List<Map<String, String>> makeupList=[
-    {
-      "subcategory":"Foundation",
-      "ads" :"0 ads",
-    },
-    {
-      "subcategory":"Highlights",
-      "ads" :"0 ads",
-    },
-    {
-      "subcategory":"Lipgloss",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Nail Polish",
-      "ads" :"0 ads",
-    },
-    {
-      "subcategory":"Rouge and Blusher",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Lip Balm,Primers and Sticks",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Makeup Removing",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Concealer",
-      "ads" :"0 ads",
-    },
-    {
-      "subcategory":"Contour Powders and Creams",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Eyelash glueing",
-      "ads" :"0 ads",
-    },
-    {
-      "subcategory":"Eyebrow pencils ",
-      "ads":"0 ads",
-    },
-
-  ];
-
-  static List<Map<String, String>> skincareList=[
-    {
-      "subcategory":"Age spots and Acne Scars Removal",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Chemical Peeling",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Laser Resurfacing",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Laser Skin Rejuvenation",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Acne Blue Light Therapy",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Thermage",
-      "ads":"0 ads",
-    },
-
-  ];
-
-  static List<Map<String, String>> massagelist=[
-    {
-      "subcategory":"Hot Stone Massage",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Sports Massage",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Swedish Massage",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Aromatherapy",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Deep tissue ",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Reflexology",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Prenatal",
-      "ads":"0 ads",
-    },
-  ];
-
-  static  List<Map<String, String>> hairdressingsubcategory=[
-    {
-      "subcategory":"Shaving",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Waxing",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Dye",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Super Cuts",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Braids",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Dread Locks",
-      "ads":"0 ads",
-    },
-  ];
-
-  static  List<Map<String, String>> braidwigslist=[
-    {
-      "subcategory":"Hair Conditioners and Shampoos",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Hair Serums",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Hair Bands",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Frontal Wigs",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Dread Locks",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Wigs Extensions",
-      "ads":"0 ads",
-    },
-    {
-      "subcategory":"Artificial Braids",
-      "ads":"0 ads",
-    },
-
-  ];
 
   getSubCounty(value){
     List<String> subcounties=[];
@@ -313,6 +76,9 @@ class Constants{
     case 'Garissa':
       subcounties=['Balambala','Daadab','Fafi','Garissa','Hulugho','Ijara','Lagdera'];
       break;
+      case 'Kirinyaga':
+        subcounties=['Kirinyaga East','Kirinyaga West','Mwea East','Mwea West','Kirinyaga Central'];
+        break;
     case 'Wajir':
       subcounties=['Buna','Eldas','Habaswein','Tarbaj','Wajir North','Wajir West','Wajir South','Wajir East'];
       break;
@@ -434,7 +200,6 @@ class Constants{
 return subcounties;
 
 }
-
 
 
 }

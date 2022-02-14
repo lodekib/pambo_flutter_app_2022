@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:new_pambo/constants/constant.dart';
+import 'package:new_pambo/model/data_model.dart';
+import 'package:new_pambo/network_utils/api.dart';
+import 'package:new_pambo/screens/search_screen.dart';
 
 class PricerangeFilter extends StatefulWidget {
   const PricerangeFilter({Key? key}) : super(key: key);
@@ -11,7 +16,8 @@ class PricerangeFilter extends StatefulWidget {
 class _PricerangeFilterState extends State<PricerangeFilter> {
   var dropdownValue;
   final _formKey = GlobalKey<FormState>();
-
+   TextEditingController keywordController = TextEditingController();
+   TextEditingController locationController =TextEditingController();
   @override
   Widget build(BuildContext context) {
 
@@ -50,7 +56,7 @@ class _PricerangeFilterState extends State<PricerangeFilter> {
                            dropdownValue = val as String;
                          });
                        },
-                       items: <String>['0 - 200', '201 - 500', '501 - 1200', '1201 - 10000','Above 10000'].map((option) {
+                       items: <String>['0 - 200', '201 - 500', '501 - 1200', '1201 - 10000','10000-50000'].map((option) {
                          return DropdownMenuItem(
                            value: option,
                            child: Text(option),
@@ -61,11 +67,12 @@ class _PricerangeFilterState extends State<PricerangeFilter> {
                  )
              ),
            ),
-          const Padding(
-            padding: EdgeInsets.only(top:4.0,bottom: 4.0),
+           Padding(
+            padding: const EdgeInsets.only(top:4.0,bottom: 4.0),
             child:  TextField(
+              controller: keywordController,
                 cursorColor: Constants.pamboprimaryColor,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Filter by keyword',
                     hintStyle: TextStyle(
                       fontWeight: FontWeight.w300,fontSize: 13
@@ -75,12 +82,12 @@ class _PricerangeFilterState extends State<PricerangeFilter> {
                     filled: true
                 )),
           ),
-           const Padding(
-            padding: EdgeInsets.only(left:4.0,right: 4.0,top: 8.0),
+            Padding(
+            padding: const EdgeInsets.only(left:4.0,right: 4.0,top: 8.0),
             child:  TextField(
-
+               controller: locationController,
                 cursorColor: Constants.pamboprimaryColor,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     hintText: 'Filter by location',
                     hintStyle: TextStyle(
                         fontWeight: FontWeight.w300,fontSize: 13
@@ -103,10 +110,39 @@ class _PricerangeFilterState extends State<PricerangeFilter> {
                 ),
               ),
               child: const Text("SEARCH",style: TextStyle(color: Constants.pamboscaffoldColor),),
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
+              onPressed: () async{
+
+                bool isPriceRange = dropdownValue != null;
+                bool isKeyword = keywordController.text.isNotEmpty;
+                bool isLocation = locationController.text.isNotEmpty;
+                if(!isPriceRange && !isKeyword && !isLocation){
+                  print('Please provide atleast one search query');
+                }else{
+                  print(isPriceRange);
+                  print(isKeyword);
+                  print(isLocation);
+                  var data = <String,String>{
+                    'search_price_range':isPriceRange ? dropdownValue :'',
+                    'search_keyword':isKeyword ? keywordController.text :'',
+                    'search_location':isLocation ? locationController.text : ''
+                  };
+
+                  var response = await Network().searchHelper(data, isPriceRange, isKeyword, isLocation);
+                  var resp = json.decode(response.body);
+                  print(resp['state']);
+                  if(resp['state']){
+                    List<dynamic> data =resp['data'];
+                    if(data.isNotEmpty){
+                       List<DataModel> finalData = data.map((e) => DataModel.fromJson(e)).toList();
+                      Navigator.push(context, MaterialPageRoute(builder: (_)=>SearchScreen(searchData: finalData)));
+                    }else{
+                      print('No search results found');
+                    }
+                  }else{
+                    print('Unable to complete the search');
+                  }
                 }
+
               },
             ),
           )

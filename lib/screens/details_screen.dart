@@ -3,19 +3,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:intl/intl.dart';
 import 'package:new_pambo/components/rate_pop_up.dart';
 import 'package:new_pambo/constants/constant.dart';
+import 'package:new_pambo/helpers/helper_functions.dart';
 import 'package:new_pambo/model/data_model.dart';
 import 'package:readmore/readmore.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-// class DetailsPage extends StatefulWidget {
-//   final DataModel data;
-//   const DetailsPage({Key? key,required this.data}) : super(key: key);
-//
-//   @override
-//   _DetailsPageState createState() => _DetailsPageState();
-// }
 
 class DetailsPage extends StatelessWidget{
   final DataModel data;
@@ -165,17 +160,26 @@ class DetailsPage extends StatelessWidget{
                                           padding: const EdgeInsets.only(top:8.0),
                                           child: Row(
                                             children: [
-                                              Wrap(
-                                                  children:List.generate(5, (index){
-                                                    return Icon(Icons.star,color: Constants.pambostarsColor,size: 20,);
-                                                  })
+                                              RatingBar.builder(
+                                                itemSize: 20,
+                                                initialRating:data.reviews.isNotEmpty ? Helper().reviews(data.reviews) : 0,
+                                                minRating: 1,
+                                                ignoreGestures: true,
+                                                direction: Axis.horizontal,
+                                                allowHalfRating: true,
+                                                itemCount: 5,
+                                                itemBuilder: (context, _) => const Icon(
+                                                  Icons.star,
+                                                  color: Colors.orange,
+                                                ),
+                                               onRatingUpdate: (double value) {  },
                                               ),
                                               const SizedBox(width: 10,),
-                                              const Text('(5.0)',style:Constants.pambocardrateTextStyle),
+                                               Text(data.reviews.isNotEmpty ? Helper().reviews(data.reviews).toString() : '(0.0)',style:Constants.pambocardrateTextStyle),
                                             ],
                                           ),
                                         ),
-                                          Text('KSH '+data.price_from+' - '+data.price_to,
+                                          Text('KSH '+data.price_from+' - KSH '+data.price_to,
                                           style:const TextStyle(color:Colors.green,fontWeight: FontWeight.bold),)
                                       ],
                                     ),
@@ -268,7 +272,7 @@ class DetailsPage extends StatelessWidget{
                                                               ),
                                                             ),
                                                           ),
-                                                          const RateService()
+                                                           RateService(post_id:data.id,)
                                                         ],
                                                         ),
                                                       );
@@ -285,7 +289,17 @@ class DetailsPage extends StatelessWidget{
                                       children:  [
                                         Expanded(
                                           child: OutlinedButton(
-                                              onPressed: (){},
+                                              onPressed: (){
+
+                                               // final Uri emailUri =Uri(
+                                               //   scheme: 'mailto',
+                                               //   path: 'brianmlodeki@gmail.com',
+                                               //   query: json.encode(<String,String>{
+                                               //     'subject':'Legal Issue to Pambo'
+                                               //   })
+                                               // );
+                                               // launch(emailUri.toString());
+                                              },
                                               style: ButtonStyle(
                                                   foregroundColor: MaterialStateProperty.all(Colors.green)
                                               ),
@@ -303,10 +317,10 @@ class DetailsPage extends StatelessWidget{
                                         ],
                                       ),
                                     ),
-                                    Flexible(
+                                    data.reviews.isNotEmpty ?  Flexible(
                                       child: ListView.builder(
                                           shrinkWrap: true,
-                                          itemCount: 25,
+                                          itemCount: data.reviews.length,
                                           itemBuilder: (context,index){
                                             return   Column(
                                               children: [
@@ -319,9 +333,9 @@ class DetailsPage extends StatelessWidget{
                                                           radius: 20,
                                                           backgroundColor: Colors.transparent,
                                                           borderWidth: 0,
-                                                          initialsText:const Text(
-                                                            "B",
-                                                            style: TextStyle(fontSize: 20, color: Colors.white),
+                                                          initialsText: Text(
+                                                            data.reviews[index]['reviewer_last_name'][0],
+                                                            style: const TextStyle(fontSize: 20, color: Colors.white),
                                                           ),
                                                           borderColor: Colors.brown,
                                                           foregroundColor: Colors.brown.withOpacity(0.5), //sets foreground colour, it works if showInitialTextAbovePicture = true , default Colors.transparent
@@ -329,35 +343,41 @@ class DetailsPage extends StatelessWidget{
                                                           onTap: () {},
                                                         ),
                                                         const  SizedBox(width: 10,),
-                                                        const Text('Brian ')
+                                                         Text(data.reviews[index]['reviewer_last_name'])
                                                       ],
                                                     ),
-                                                    Wrap(
-                                                        children:List.generate(5, (index){
-                                                          return const Icon(Icons.star,color: Colors.green,size: 10,);
-                                                        })
-                                                    ),
+                                                    RatingBar.builder(
+                                                      itemSize: 10,
+                                                      initialRating: double.parse(data.reviews[index]['rating']),
+                                                      minRating: 1,
+                                                      ignoreGestures: true,
+                                                      direction: Axis.horizontal,
+                                                      allowHalfRating: true,
+                                                      itemCount: 5,
+                                                      itemBuilder: (context, _) => const Icon(
+                                                        Icons.star,
+                                                        color: Constants.pamboprimaryColor,
+                                                      ), onRatingUpdate: (double value) {  },
+                                                    )
 
 
                                                   ],
                                                 ),
-                                                const Padding(
-                                                  padding: EdgeInsets.all(8.0),
+                                                 Padding(
+                                                  padding:const EdgeInsets.all(8.0),
                                                   child: ReadMoreText(
-                                                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean fermentum neque'
-                                                        ' efficitur blandit urna. '
-                                                        'Duis congue pellentesque sapien in tempor. Pellentesque laoreet arcu ac sem posuere posuere.',
-                                                    style:TextStyle(color:Colors.grey,fontSize: 13),
+                                                    data.reviews[index]['review'],
+                                                    style:const TextStyle(color:Colors.grey,fontSize: 13),
                                                     trimLines: 4,
                                                     trimLength: 5,
                                                     trimMode: TrimMode.Line,
                                                     trimCollapsedText: '...>>>',
-                                                    moreStyle: TextStyle(
+                                                    moreStyle: const TextStyle(
                                                         fontWeight: FontWeight.bold,
                                                         color: Constants.pamboprimaryColor,
                                                         fontSize:14
                                                     ),
-                                                    lessStyle: TextStyle(
+                                                    lessStyle:const TextStyle(
                                                         fontWeight: FontWeight.bold,
                                                         color: Constants.pamboprimaryColor,
                                                         fontSize:14
@@ -367,15 +387,15 @@ class DetailsPage extends StatelessWidget{
                                                 ),
                                                 Row(
                                                   mainAxisAlignment: MainAxisAlignment.end,
-                                                  children: const[
-                                                    Text('18/01/22',style: TextStyle(fontWeight:FontWeight.w100,fontSize: 12),)
+                                                  children: [
+                                                    Text(DateFormat.yMMMEd().format(DateTime.parse(data.reviews[index]['created_at'])),style: const TextStyle(fontWeight:FontWeight.w100,fontSize: 12),)
                                                   ],
                                                 )
                                               ],
 
                                             );
                                           }),
-                                    )
+                                    ) : const Text('No reviews for this service')
                                   ],
                                 ),
                               ),
@@ -391,4 +411,5 @@ class DetailsPage extends StatelessWidget{
         );
 
   }
+
 }

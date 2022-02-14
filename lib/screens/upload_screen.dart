@@ -1,10 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:async/async.dart';
 import 'package:advance_image_picker/advance_image_picker.dart';
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_pambo/constants/constant.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({Key? key}) : super(key: key);
@@ -14,6 +18,12 @@ class UploadScreen extends StatefulWidget {
 }
 
 class _UploadScreenState extends State<UploadScreen> {
+  TextEditingController title = TextEditingController();
+  TextEditingController location = TextEditingController();
+  TextEditingController price_from = TextEditingController();
+  TextEditingController price_to = TextEditingController();
+  TextEditingController description = TextEditingController();
+  var sponsorship;
   bool isChecked = false;
   String selectedCategoryValue = Constants.categories[0];
   var  currentSelectedCounty;
@@ -23,6 +33,9 @@ class _UploadScreenState extends State<UploadScreen> {
   List<ImageObject> _imgObjs = [];
   bool hasImages = false;
   final _formKey = GlobalKey<FormState>();
+
+  List<File> imageFiles = [];
+  List resultList = [];
 
 
   @override
@@ -42,8 +55,11 @@ class _UploadScreenState extends State<UploadScreen> {
           }));
 
           if ((objects?.length ?? 0) > 0) {
+            for(int i=0; i<objects!.length; i++){
+              imageFiles.add(File(objects[i].modifiedPath));
+            };
             setState(() {
-              _imgObjs = objects!;
+              _imgObjs = objects;
               hasImages = true;
             });
           }
@@ -55,9 +71,14 @@ class _UploadScreenState extends State<UploadScreen> {
          elevation: 0,
          leading: Row(
            children: <Widget>[
-             Container(
-               padding: const EdgeInsets.only(left: 0, top: 10, bottom: 10),
-               child: const Icon(Icons.keyboard_arrow_left, color: Constants.pamboscaffoldColor,size: 30,),
+             GestureDetector(
+               onTap:(){
+                 Navigator.pop(context);
+                 },
+               child: Container(
+                 padding: const EdgeInsets.only(left: 0, top: 10, bottom: 10),
+                 child: const Icon(Icons.keyboard_arrow_left, color: Constants.pamboscaffoldColor,size: 30,),
+               ),
              ),
            ],
          ),
@@ -244,17 +265,18 @@ class _UploadScreenState extends State<UploadScreen> {
                margin: const EdgeInsets.symmetric(vertical: 10),
                child: Column(
                  crossAxisAlignment: CrossAxisAlignment.start,
-                 children: const <Widget>[
-                   Text(
+                 children:  <Widget>[
+                  const Text(
                      "Service Title",
                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                    ),
-                   SizedBox(
+                   const SizedBox(
                      height: 10,
                    ),
                    TextField(
+                     controller: title,
                        cursorColor: Constants.pamboprimaryColor,
-                       decoration: InputDecoration(
+                       decoration: const InputDecoration(
                            hintText: 'Brief title  of the service ',
                            hintStyle: TextStyle(
                                color:Colors.grey,
@@ -272,18 +294,19 @@ class _UploadScreenState extends State<UploadScreen> {
                    margin: const EdgeInsets.symmetric(vertical: 10),
                    child: Column(
                      crossAxisAlignment: CrossAxisAlignment.start,
-                     children: const <Widget>[
-                       Text(
+                     children:  <Widget>[
+                      const Text(
                          "Service Location",
                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                        ),
-                       SizedBox(
+                       const SizedBox(
                          height: 10,
                        ),
                        TextField(
+                         controller: location,
                          keyboardType: TextInputType.streetAddress,
                            cursorColor: Constants.pamboprimaryColor,
-                           decoration: InputDecoration(
+                           decoration: const InputDecoration(
                              hintText: 'Specific street of your service eg street,Rd ',
                                hintStyle: TextStyle(
                                  color:Colors.grey,
@@ -308,18 +331,19 @@ class _UploadScreenState extends State<UploadScreen> {
                            margin: const EdgeInsets.symmetric(vertical: 10),
                            child: Column(
                              crossAxisAlignment: CrossAxisAlignment.start,
-                             children: const <Widget>[
-                               Text(
+                             children:  <Widget>[
+                               const Text(
                                  "Price From (KSH)",
                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                                ),
-                               SizedBox(
+                             const  SizedBox(
                                  height: 10,
                                ),
                                TextField(
+                                 controller: price_from,
                                  keyboardType: TextInputType.number,
                                    cursorColor: Constants.pamboprimaryColor,
-                                   decoration: InputDecoration(
+                                   decoration: const InputDecoration(
                                        hintText: 'Lowest price range',
                                        hintStyle: TextStyle(
                                            color:Colors.grey,
@@ -343,18 +367,19 @@ class _UploadScreenState extends State<UploadScreen> {
                            margin: const EdgeInsets.symmetric(vertical: 10),
                            child: Column(
                              crossAxisAlignment: CrossAxisAlignment.start,
-                             children: const <Widget>[
-                               Text(
+                             children:  <Widget>[
+                               const Text(
                                  "Price To (KSH)",
                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                                ),
-                               SizedBox(
+                               const SizedBox(
                                  height: 10,
                                ),
                                TextField(
+                                 controller:price_to,
                                  keyboardType: TextInputType.number,
                                    cursorColor: Constants.pamboprimaryColor,
-                                   decoration: InputDecoration(
+                                   decoration: const InputDecoration(
                                        hintText: 'Highest price range',
                                        hintStyle: TextStyle(
                                            color:Colors.grey,
@@ -376,19 +401,20 @@ class _UploadScreenState extends State<UploadScreen> {
                    margin: const EdgeInsets.symmetric(vertical: 10),
                    child: Column(
                      crossAxisAlignment: CrossAxisAlignment.start,
-                     children: const <Widget>[
-                       Text(
+                     children:  <Widget>[
+                       const Text(
                          "Service Description",
                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                        ),
-                       SizedBox(
+                      const  SizedBox(
                          height: 10,
                        ),
                        TextField(
+                         controller:description,
                          maxLines: null,
                            keyboardType: TextInputType.streetAddress,
                            cursorColor: Constants.pamboprimaryColor,
-                           decoration: InputDecoration(
+                           decoration: const InputDecoration(
                                hintText: 'Detailed description of the service',
                                hintStyle: TextStyle(
                                    color:Colors.grey,
@@ -422,6 +448,7 @@ class _UploadScreenState extends State<UploadScreen> {
                        textStyle: TextStyle(fontSize: 13)),
                    radioButtonValue: (value) {
                      print(value);
+                     sponsorship = value;
                    },
                    selectedColor:Constants.pamboprimaryColor
                  ),
@@ -448,10 +475,49 @@ class _UploadScreenState extends State<UploadScreen> {
               isChecked ? Padding(
               padding: const EdgeInsets.all(8.0),
               child: InkWell(
-                onTap: (){
-                     if(kDebugMode){
-                       print('Posting .....');
-                     }
+                onTap: ()async{
+                  SharedPreferences localStorage = await SharedPreferences.getInstance();
+                  var token=jsonDecode(localStorage.getString('token')!)['token'];
+                  if(token != null){
+                    List <http.MultipartFile> multiparts =  <http.MultipartFile>[];
+                    http.MultipartRequest request = http.MultipartRequest('POST',Uri.parse(Constants.baseUrl+'/post'));
+                    var headers= <String, String>{
+                      'Accept':'application/json',
+                          'Content-Type': 'application/json; charset=UTF-8',
+                      'Authorization':'Bearer '+token,
+                      };
+
+                    for(int i=0; i< imageFiles.length; i++){
+                      String filename=imageFiles[i].path.split("/").last;
+                      var stream=  http.ByteStream(DelegatingStream.typed(imageFiles[i].openRead()));
+                      var length=await imageFiles[i].length();
+                      var multipartFile= http.MultipartFile("images[]", stream, length,filename:filename);
+                      multiparts.add(multipartFile);
+                    }
+                    request.headers.addAll(headers);
+                    request.files.addAll(multiparts);
+                    print(multiparts);
+                    request.fields['category']=selectedCategoryValue;
+                    request.fields['county']=currentSelectedCounty;
+                    request.fields['sub_county']=currentSelectedsubcounty;
+                    request.fields['title']=title.text;
+                    request.fields['location']=location.text;
+                    request.fields['price_from']=price_from.text;
+                    request.fields['price_to']=price_to.text;
+                    request.fields['description']=description.text;
+                    request.fields['sponsorship']=sponsorship;
+
+                    print(request.fields);
+                    var response = await request.send();
+                    var respString = json.decode(await response.stream.bytesToString());
+                   if(respString['status']){
+                     print(respString['message']);
+                   }else{
+                     print('Unable to Upload the post');
+                   }
+
+                  }
+
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width,
@@ -485,6 +551,8 @@ class _UploadScreenState extends State<UploadScreen> {
        )
     );
   }
+
+
 
 }
 
