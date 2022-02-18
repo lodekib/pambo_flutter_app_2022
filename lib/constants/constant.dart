@@ -10,7 +10,7 @@ class Constants{
       color:Colors.green,fontWeight: FontWeight.bold
   );
 
-  static String baseUrl = 'https://0405-197-248-49-247.ngrok.io/api/v1';
+  static String baseUrl = 'https://8cad-197-248-49-247.ngrok.io/api/v1';
 
   static const Color  pamboscaffoldColor =  Color(0xFFFFFFFF);
   static Color pambounselectedtabColor = Colors.grey;
@@ -32,7 +32,7 @@ class Constants{
 
   static List<TabChoice> tabList = <TabChoice>[
     TabChoice(category: 'Top', image: 'assets/images/icons8-fire-35.png', goTo: const HomeScreen()),
-    TabChoice(category: 'Fragrance', image: 'assets/images/icons8-fragrance-35.png', goTo: const FragrancelistScreen()),
+    TabChoice(category: 'Fragrance', image: 'assets/images/icons8-fragrance-35.png', goTo:  FragrancelistScreen()),
     TabChoice(category: 'Jewellery', image: 'assets/images/icons8-earrings-35.png', goTo: const HomeScreen()),
     TabChoice(category: 'Makeup', image: 'assets/images/icons8-makeup-35.png', goTo: const HomeScreen()),
     TabChoice(category: 'Skin Care', image: 'assets/images/icons8-cream-35.png', goTo: const HomeScreen()),

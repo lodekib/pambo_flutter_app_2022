@@ -441,7 +441,7 @@ class _UploadScreenState extends State<UploadScreen> {
                    absoluteZeroSpacing: true,
                    unSelectedColor: Theme.of(context).canvasColor,
                    buttonLables: const ['Free','Silver','Platinum'],
-                   buttonValues: const ["0","100","200"],
+                   buttonValues: const ["0","5","10"],
                    buttonTextStyle: const ButtonTextStyle(
                        selectedColor: Colors.white,
                        unSelectedColor: Colors.black,
@@ -510,11 +510,12 @@ class _UploadScreenState extends State<UploadScreen> {
                     print(request.fields);
                     var response = await request.send();
                     var respString = json.decode(await response.stream.bytesToString());
-                   if(respString['status']){
-                     print(respString['message']);
-                   }else{
-                     print('Unable to Upload the post');
-                   }
+                    print(respString);
+                   // if(respString['status']){
+                   //   print(respString['message']);
+                   // }else{
+                   //   print('Unable to Upload the post');
+                   // }
 
                   }
 

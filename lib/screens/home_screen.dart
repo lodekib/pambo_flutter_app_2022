@@ -3,6 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:new_pambo/components/drawer.dart';
 import 'package:new_pambo/components/search_filter.dart';
 import 'package:new_pambo/constants/constant.dart';
+import 'package:new_pambo/providers/categories/braidswigs_provider.dart';
+import 'package:new_pambo/providers/categories/fragrance_provider.dart';
+import 'package:new_pambo/providers/categories/hairdressing_provider.dart';
+import 'package:new_pambo/providers/categories/jewelerry_provider.dart';
+import 'package:new_pambo/providers/categories/makeup_provider.dart';
+import 'package:new_pambo/providers/categories/massage_provider.dart';
+import 'package:new_pambo/providers/categories/skincare_provider.dart';
+import 'package:new_pambo/providers/uploads_provider.dart';
 import 'package:new_pambo/screens/checkAuth.dart';
 import 'package:new_pambo/screens/login_screen.dart';
 import 'package:new_pambo/tab_components/tabs.dart';
@@ -14,6 +22,7 @@ import 'package:new_pambo/tabviewscontent/makeup_tab.dart';
 import 'package:new_pambo/tabviewscontent/massage_tab.dart';
 import 'package:new_pambo/tabviewscontent/skin_care_tab.dart';
 import 'package:new_pambo/tabviewscontent/top_tab.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -28,10 +37,11 @@ class _HomeScreenState extends State<HomeScreen>  with SingleTickerProviderState
   int currentIndex=0;
   String greet='';
 
+
   @override
   void initState(){
-    super.initState();
 
+    super.initState();
   }
 
 
@@ -172,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen>  with SingleTickerProviderState
                      )
                    ]
                ),
-               body: const TabBarView(
+               body:   TabBarView(
                  children: [
                    TopTabView(),
                    FragrancelistScreen(),

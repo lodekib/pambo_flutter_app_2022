@@ -9,6 +9,7 @@ import 'package:new_pambo/components/rate_pop_up.dart';
 import 'package:new_pambo/constants/constant.dart';
 import 'package:new_pambo/helpers/helper_functions.dart';
 import 'package:new_pambo/model/data_model.dart';
+import 'package:new_pambo/screens/map/map_screen.dart';
 import 'package:readmore/readmore.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -27,7 +28,7 @@ class DetailsPage extends StatelessWidget{
             body:SingleChildScrollView(
               child: data != null ? Column(
                 children: [
-                  SizedBox(
+                  Container(
                     width: MediaQuery.of(context).size.width,
                     height: 1500,
                     child: Stack(
@@ -48,10 +49,21 @@ class DetailsPage extends StatelessWidget{
                                   Container(
                                     width: double.maxFinite,
                                     height: MediaQuery.of(context).size.height*.45,
+                                   decoration: BoxDecoration(
+                                     gradient: LinearGradient(
+                                       begin: Alignment.topCenter,
+                                       end: Alignment.bottomCenter,
+                                       colors: <Color>[
+                                         Colors.black.withAlpha(0),
+                                         Colors.black12,
+                                         Colors.black45
+                                       ],
+                                     ),
+                                   ),
                                    child:CachedNetworkImage(
                                      fit: BoxFit.cover,
                                      filterQuality: FilterQuality.medium,
-                                     imageUrl:'https://51a6-197-248-49-247.ngrok.io/storage/uploads/',
+                                     imageUrl:'',
                                      progressIndicatorBuilder: (context,url,downloadProgress)
                                      =>const Center(
                                        child:  CircularProgressIndicator(
@@ -61,8 +73,10 @@ class DetailsPage extends StatelessWidget{
                                      ),
                                      errorWidget: (context,url,error)=>Center(child: Column(
                                        children: const [
-                                         Icon(Icons.error,size:15,color: Constants.pamboprimaryColor,),
-                                         Text('Check your Internet Connection!',style: TextStyle(color: Colors.grey,fontWeight: FontWeight.w300,fontSize: 13),)
+                                         Padding(
+                                           padding: EdgeInsets.only(top:60.0,bottom:60.0),
+                                           child: Icon(Icons.image,size: 50,color: Constants.pamboprimaryColor,),
+                                         ),
                                        ],
                                      )),
                                    ),
@@ -183,37 +197,40 @@ class DetailsPage extends StatelessWidget{
                                           style:const TextStyle(color:Colors.green,fontWeight: FontWeight.bold),)
                                       ],
                                     ),
-                                    Row(
-                                      children:  [
-                                        Padding(
-                                          padding: const EdgeInsets.only(top:8.0),
-                                          child: Row(
-                                            children:  [
-                                            const  Icon(Icons.location_on,color:Colors.grey,),
-                                             const SizedBox(width: 5,),
-                                              Text(data.location,style:const TextStyle(fontSize: 13,color: Colors.grey),)
-                                            ],
+                                    GestureDetector(
+                                      onTap:(){
+                                        Navigator.push(context, MaterialPageRoute(builder: (context)=> MapView(serviceLocation: data.location,)));
+                                      },
+                                      child: Row(
+                                        children:  [
+                                          Padding(
+                                            padding: const EdgeInsets.only(top:8.0),
+                                            child: Row(
+                                              children:  [
+                                              const  Icon(Icons.location_on,color:Colors.grey,),
+                                               const SizedBox(width: 5,),
+                                                Text(data.location,style:const TextStyle(fontSize: 13,color: Colors.grey),)
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                     const  Divider(),
                                     Column(
                                       children: [
                                         Row(
                                           children: const <Widget>[
-                                            Expanded(
-                                              child: Padding(
-                                                padding: EdgeInsets.only(left: 30.0),
-                                                child: Text(
-                                                  "Service Description",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18,
-                                                    color: Constants.pamboprimaryColor,
-                                                  ),
-                                                  textAlign: TextAlign.center,
+                                            Padding(
+                                              padding: EdgeInsets.only(left: 30.0),
+                                              child: Text(
+                                                "Service Description",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18,
+                                                  color: Constants.pamboprimaryColor,
                                                 ),
+                                                textAlign: TextAlign.center,
                                               ),
                                             ),
                                           ],
@@ -291,14 +308,14 @@ class DetailsPage extends StatelessWidget{
                                           child: OutlinedButton(
                                               onPressed: (){
 
-                                               // final Uri emailUri =Uri(
-                                               //   scheme: 'mailto',
-                                               //   path: 'brianmlodeki@gmail.com',
-                                               //   query: json.encode(<String,String>{
-                                               //     'subject':'Legal Issue to Pambo'
-                                               //   })
-                                               // );
-                                               // launch(emailUri.toString());
+                                               final Uri emailUri =Uri(
+                                                 scheme: 'mailto',
+                                                 path: 'brianmlodeki@gmail.com',
+                                                 query: json.encode(<String,String>{
+                                                   'subject':'Legal Issue to Pambo'
+                                                 })
+                                               );
+                                               launch(emailUri.toString());
                                               },
                                               style: ButtonStyle(
                                                   foregroundColor: MaterialStateProperty.all(Colors.green)

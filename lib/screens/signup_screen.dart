@@ -403,6 +403,7 @@ class _SignupScreenState extends State<SignupScreen> {
       localStorage.setString('user', json.encode(resbody['user']));
 
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        duration: Duration(seconds: 1),
         content: Text('Registration successful'),
         behavior: SnackBarBehavior.floating,
         backgroundColor: Constants.pamboprimaryColor,
