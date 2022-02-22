@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:new_pambo/components/bezier_container.dart';
 import 'package:new_pambo/constants/constant.dart';
 import 'package:new_pambo/network_utils/api.dart';
@@ -127,10 +128,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 colors: [Color(0xFFDB228E), Color(0xFFDB228E)])),
-        child: const Text(
+        child: !_isLoading ? const Text(
           'Login',
           style: TextStyle(fontSize: 20, color: Colors.white),
-        ),
+        ): const SpinKitThreeBounce(
+          size: 20,
+          color: Colors.white,
+        )
       ),
     );
   }
@@ -341,20 +345,30 @@ class _LoginScreenState extends State<LoginScreen> {
     var resbody =json.decode(res.body);
     // print(resbody);
       if(resbody['success']){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          duration: const Duration(seconds: 1),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Constants.pamboprimaryColor,
+          content: Text(resbody['message']),
+        ),
+        );
+        Navigator.push(
+            context,MaterialPageRoute(builder: (context)=>const HomeScreen())
+        );
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.setString('token', json.encode(resbody['token']));
       localStorage.setString('user',json.encode(resbody['user']));
-      print('LOGGED IN USER CURRENT TOKEN');
-      print(localStorage.getString('token'));
-      print(localStorage.getString('token').runtimeType);
-      print('LOGGED IN USER CURRENT TOKEN');
-      Navigator.push(
-        context,MaterialPageRoute(builder: (context)=>const HomeScreen())
-      );
-      print(resbody['message']);
-    }else{
 
+    }else{
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          duration:const Duration(seconds: 1),
+          backgroundColor: Constants.pamboprimaryColor,
+          content: Text(resbody['message']),
+        ),
+        );
       print(resbody['message']);
+
       }
     setState(() {
       _isLoading = false;

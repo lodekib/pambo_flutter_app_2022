@@ -10,7 +10,7 @@ class Constants{
       color:Colors.green,fontWeight: FontWeight.bold
   );
 
-  static String baseUrl = 'https://8cad-197-248-49-247.ngrok.io/api/v1';
+  static String baseUrl = 'https://623b-197-248-49-247.ngrok.io/api/v1';
 
   static const Color  pamboscaffoldColor =  Color(0xFFFFFFFF);
   static Color pambounselectedtabColor = Colors.grey;

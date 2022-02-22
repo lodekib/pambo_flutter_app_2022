@@ -251,7 +251,7 @@ class _TopTabViewState extends State<TopTabView> {
                                                  ),
                                                ),
                                                Padding(
-                                                 padding: const EdgeInsets.all(8.0),
+                                                 padding: const EdgeInsets.only(top:2.0,bottom: 2.0),
                                                  child: Text(
                                                      DateFormat.yMMMEd().format(DateTime.parse(data.dataModel[index].created_at)),
                                                    style: const TextStyle(

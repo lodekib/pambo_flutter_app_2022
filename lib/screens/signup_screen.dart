@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:new_pambo/components/bezier_container.dart';
 import 'package:new_pambo/constants/constant.dart';
 import 'package:new_pambo/network_utils/api.dart';
-import 'package:new_pambo/screens/home_screen.dart';
 import 'package:new_pambo/screens/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -107,10 +107,13 @@ class _SignupScreenState extends State<SignupScreen> {
                 colors: [
                   Color(0xFFDB228E),
                   Color(0xFFDB228E)])),
-        child: const Text(
+        child: !_isLoading ? const Text(
           'Register Now',
           style: TextStyle(fontSize: 20, color: Colors.white),
-        ),
+        ):const SpinKitThreeBounce(
+          size: 20,
+          color: Colors.white,
+        )
       ),
     );
   }
@@ -397,28 +400,33 @@ class _SignupScreenState extends State<SignupScreen> {
       'password':password
     }, '/register');
     var resbody = json.decode(res.body);
-    if(resbody['success']){
+     print(resbody.runtimeType);
+     print(resbody['user']);
+     print(resbody['token']);
+     if(res.statusCode == 200){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: const Duration(seconds: 1),
+        content: Text(resbody['message']),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Constants.pamboprimaryColor,
+      ));
+
+      Navigator.push(context, MaterialPageRoute(builder:(context)=>const LoginScreen()));
+
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.setString('token', json.encode(resbody['token']));
       localStorage.setString('user', json.encode(resbody['user']));
 
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        duration: Duration(seconds: 1),
-        content: Text('Registration successful'),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Constants.pamboprimaryColor,
-      ));
-      print(resbody['user']);
-      Navigator.push(context, MaterialPageRoute(builder:(context)=>const HomeScreen()));
-    }else{
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Unable to register'),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Constants.pamboprimaryColor,
-      ));
-      print(resbody['message']);
-    }
+      print(localStorage.getString('user'));
+      print(localStorage.getString('token'));
 
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+        content: Text(resbody['message'].entries.elementAt(0).value[0].toString()),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Constants.pamboprimaryColor,
+      ));
+    }
     setState(() {
       _isLoading= false;
     });

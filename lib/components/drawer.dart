@@ -14,7 +14,10 @@ class MyDrawer extends StatelessWidget {
         child: ListView(
             children:[
               InkWell(
-                onTap:(){
+                onTap:()async{
+                  SharedPreferences localStorage = await SharedPreferences.getInstance();
+                  print(jsonDecode(localStorage.getString('user')!)['user']);
+                  print(jsonDecode(localStorage.getString('token')!)['token']);
                 },
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -89,14 +92,15 @@ class MyDrawer extends StatelessWidget {
                      print(localStorage.getString('token'));
                      var res = await Network().getData('/logout');
                      var body = json.decode(res.body);
-                     if(body['success']){
-                       SharedPreferences localStorage = await SharedPreferences.getInstance();
-                       localStorage.remove('token');
-                       localStorage.remove('user');
-                       print(body);
-                     }else {
-                       print(body);
-                     }
+
+                     // if(body['success']){
+                     //   SharedPreferences localStorage = await SharedPreferences.getInstance();
+                     //   localStorage.remove('token');
+                     //   localStorage.remove('user');
+                     //   print(body);
+                     // }else {
+                     //   print(body);
+                     // }
                    }else{
                      print('You are not signed In yet');
                    }

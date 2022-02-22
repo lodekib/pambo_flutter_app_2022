@@ -5,6 +5,7 @@ import 'package:advance_image_picker/advance_image_picker.dart';
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:new_pambo/constants/constant.dart';
 import 'package:http/http.dart' as http;
@@ -25,6 +26,7 @@ class _UploadScreenState extends State<UploadScreen> {
   TextEditingController description = TextEditingController();
   var sponsorship;
   bool isChecked = false;
+  bool isLoading = false;
   String selectedCategoryValue = Constants.categories[0];
   var  currentSelectedCounty;
   var  currentSelectedsubcounty;
@@ -441,7 +443,7 @@ class _UploadScreenState extends State<UploadScreen> {
                    absoluteZeroSpacing: true,
                    unSelectedColor: Theme.of(context).canvasColor,
                    buttonLables: const ['Free','Silver','Platinum'],
-                   buttonValues: const ["0","5","10"],
+                   buttonValues: const ["0","1","5"],
                    buttonTextStyle: const ButtonTextStyle(
                        selectedColor: Colors.white,
                        unSelectedColor: Colors.black,
@@ -476,6 +478,9 @@ class _UploadScreenState extends State<UploadScreen> {
               padding: const EdgeInsets.all(8.0),
               child: InkWell(
                 onTap: ()async{
+                  setState(() {
+                    isLoading = true;
+                  });
                   SharedPreferences localStorage = await SharedPreferences.getInstance();
                   var token=jsonDecode(localStorage.getString('token')!)['token'];
                   if(token != null){
@@ -511,13 +516,17 @@ class _UploadScreenState extends State<UploadScreen> {
                     var response = await request.send();
                     var respString = json.decode(await response.stream.bytesToString());
                     print(respString);
-                   // if(respString['status']){
-                   //   print(respString['message']);
-                   // }else{
-                   //   print('Unable to Upload the post');
-                   // }
+                   if(response.statusCode == 200){
+                     print(respString['message']);
+                   }else{
+                     print('Unable to Upload the post');
+                   }
 
                   }
+
+                  setState(() {
+                    isLoading = false;
+                  });
 
                 },
                 child: Container(
@@ -539,10 +548,13 @@ class _UploadScreenState extends State<UploadScreen> {
                           colors: [
                             Color(0xFFDB228E),
                             Color(0xFFDB228E)])),
-                  child: const Text(
+                  child: !isLoading ? const Text(
                     'UPLOAD SERVICE',
                     style: TextStyle(fontSize: 20, color: Colors.white),
-                  ),
+                  ):const SpinKitThreeBounce(
+                    size:20,
+                    color: Colors.white,
+                  )
                 ),
               ),
             ) :Container()

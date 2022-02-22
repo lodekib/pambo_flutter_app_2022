@@ -37,9 +37,12 @@ class _MapViewState extends State<MapView> {
 
   Set<Marker> markers = {};
 
-  late PolylinePoints polylinePoints;
+   PolylinePoints polylinePoints = PolylinePoints();
   Map<PolylineId, Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
+
+  final Set<Polyline>_polyline={};
+
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -311,7 +314,6 @@ class _MapViewState extends State<MapView> {
       double destinationLatitude,
       double destinationLongitude,
       ) async {
-    polylinePoints = PolylinePoints();
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
       Secrets.API_KEY,
       PointLatLng(startLatitude, startLongitude),
