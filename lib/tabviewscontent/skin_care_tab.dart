@@ -5,24 +5,24 @@ import 'package:new_pambo/model/data_model.dart';
 import 'package:new_pambo/providers/categories/skincare_provider.dart';
 import 'package:new_pambo/screens/category_screens/view_categories.dart';
 
-
 class SkincarelistScreen extends StatelessWidget {
+  const SkincarelistScreen({Key? key}) : super(key: key);
 
-  String countSkincares(dynamic vals ,int index){
-    if(vals.elementAt(index).length > 1){
-      return vals.elementAt(index).length.toString()+' services';
-    }else if(vals.elementAt(index).length == 1){
-      return vals.elementAt(index).length.toString()+' service';
-    }else{
+  String countSkincares(dynamic vals, int index) {
+    if (vals.elementAt(index).length > 1) {
+      return vals.elementAt(index).length.toString() + ' services';
+    } else if (vals.elementAt(index).length == 1) {
+      return vals.elementAt(index).length.toString() + ' service';
+    } else {
       return 'No services available';
     }
   }
 
-  List<DataModel> skincareToModel(List<dynamic> skincareToConvert){
-    return skincareToConvert.map((skincare) => DataModel.fromJson(skincare)).toList();
+  List<DataModel> skincareToModel(List<dynamic> skincareToConvert) {
+    return skincareToConvert
+        .map((skincare) => DataModel.fromJson(skincare))
+        .toList();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -40,41 +40,52 @@ class SkincarelistScreen extends StatelessWidget {
                 color: Constants.pamboprimaryColor,
               );
             case ConnectionState.done:
-              Map<String, dynamic> skincare = snapshot.data as Map<
-                  String,
-                  dynamic>;
-               return  ListView.builder(
-              itemCount: skincare.length,
-              itemBuilder: (BuildContext context, int index){
-                return Card(
-                    color: (index % 2==0)?Colors.white:Colors.grey[100],
-                    child:ListTile(
-                      title: Text(skincare.keys.elementAt(index)),
-                      subtitle:  Text(countSkincares(skincare.values, index),style: const TextStyle(fontSize: 13),),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () async{
-                        skincare.values.elementAt(index).length >0 ?
-                        await Navigator.push(context,
-                            MaterialPageRoute(
-                                builder:(_)=>
-                                    CategoricalViews(
-                                        subcategory: skincare.keys.elementAt(index),
-                                        data: skincareToModel(skincare.values.elementAt(index)))))
-                            :ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                behavior: SnackBarBehavior.floating,
-                                duration: Duration(seconds: 1),
-                                backgroundColor: Constants.pamboprimaryColor,
-                                content: Text('No services')
-                            )
-                        );
-                      },
-                    )
+              if (snapshot.hasError) {
+                return const Icon(
+                  Icons.hide_source,
+                  size: 50,
+                  color: Constants.pamboprimaryColor,
                 );
+              } else {
+                Map<String, dynamic> skincare =
+                    snapshot.data as Map<String, dynamic>;
+                return ListView.builder(
+                    itemCount: skincare.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Card(
+                          color: (index % 2 == 0)
+                              ? Colors.white
+                              : Colors.grey[100],
+                          child: ListTile(
+                            title: Text(skincare.keys.elementAt(index)),
+                            subtitle: Text(
+                              countSkincares(skincare.values, index),
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () async {
+                              skincare.values.elementAt(index).length > 0
+                                  ? await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => CategoricalViews(
+                                              subcategory: skincare.keys
+                                                  .elementAt(index),
+                                              data: skincareToModel(skincare
+                                                  .values
+                                                  .elementAt(index)))))
+                                  : ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          behavior: SnackBarBehavior.floating,
+                                          duration: Duration(seconds: 1),
+                                          backgroundColor:
+                                              Constants.pamboprimaryColor,
+                                          content: Text('No services')));
+                            },
+                          ));
+                    });
               }
-          );
           }
-        }
-    );
+        });
   }
 }

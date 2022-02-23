@@ -5,8 +5,8 @@ import 'package:new_pambo/model/data_model.dart';
 import 'package:new_pambo/providers/categories/hairdressing_provider.dart';
 import 'package:new_pambo/screens/category_screens/view_categories.dart';
 
-
 class BraidswigslistScreen extends StatelessWidget {
+  const BraidswigslistScreen({Key? key}) : super(key: key);
 
   String countBraidswigs(dynamic vals, int index) {
     if (vals.elementAt(index).length > 1) {
@@ -19,16 +19,17 @@ class BraidswigslistScreen extends StatelessWidget {
   }
 
   List<DataModel> braidswigsToModel(List<dynamic> braidswigsToConvert) {
-    return braidswigsToConvert.map((braidswigs) => DataModel.fromJson(braidswigs)).toList();
+    return braidswigsToConvert
+        .map((braidswigs) => DataModel.fromJson(braidswigs))
+        .toList();
   }
-
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: HairdressingDataProvider().getHairdressings(context),
-      builder: (context,snapshot){
-        switch(snapshot.connectionState){
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
           case ConnectionState.active:
             return const Text('Connection is active');
           case ConnectionState.none:
@@ -39,45 +40,52 @@ class BraidswigslistScreen extends StatelessWidget {
               color: Constants.pamboprimaryColor,
             );
           case ConnectionState.done:
-            Map<String,dynamic> braidswigs = snapshot.data as Map<String,dynamic> ;
-            return ListView.builder(
-                itemCount: braidswigs.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                      color: (index % 2 == 0) ? Colors.white : Colors.grey[100],
-                      child: ListTile(
-                        title: Text(braidswigs.keys.elementAt(index)),
-                        subtitle: Text(
-                          countBraidswigs(braidswigs.values, index),
-                          style: const TextStyle(fontSize: 13),),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () async {
-                          braidswigs.values
-                              .elementAt(index)
-                              .length > 0 ?
-                          await Navigator.push(context,
-                              MaterialPageRoute(
-                                  builder: (_) =>
-                                      CategoricalViews(
-                                          subcategory: braidswigs.keys.elementAt(index),
-                                          data: braidswigsToModel(braidswigs
-                                              .values.elementAt(
-                                              index)))))
-                              : ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  behavior: SnackBarBehavior.floating,
-                                  duration: Duration(seconds: 1),
-                                  backgroundColor: Constants.pamboprimaryColor,
-                                  content: Text('No services')));
-                        },
-                      )
-                  );
-                }
-            );
+            if (snapshot.hasError) {
+              return const Icon(
+                Icons.hide_source,
+                size: 50,
+                color: Constants.pamboprimaryColor,
+              );
+            } else {
+              Map<String, dynamic> braidswigs =
+                  snapshot.data as Map<String, dynamic>;
+              return ListView.builder(
+                  itemCount: braidswigs.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Card(
+                        color:
+                            (index % 2 == 0) ? Colors.white : Colors.grey[100],
+                        child: ListTile(
+                          title: Text(braidswigs.keys.elementAt(index)),
+                          subtitle: Text(
+                            countBraidswigs(braidswigs.values, index),
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () async {
+                            braidswigs.values.elementAt(index).length > 0
+                                ? await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => CategoricalViews(
+                                            subcategory: braidswigs.keys
+                                                .elementAt(index),
+                                            data: braidswigsToModel(braidswigs
+                                                .values
+                                                .elementAt(index)))))
+                                : ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        behavior: SnackBarBehavior.floating,
+                                        duration: Duration(seconds: 1),
+                                        backgroundColor:
+                                            Constants.pamboprimaryColor,
+                                        content: Text('No services')));
+                          },
+                        ));
+                  });
+            }
         }
       },
     );
-
   }
 }
-
