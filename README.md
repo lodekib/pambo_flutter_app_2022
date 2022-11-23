@@ -1,4 +1,3 @@
-# new_pambo
+# Pambo Mobile Application
 
-The new Pambo Application
-A cross platform mobile application to connect beauty service providers with their customers.
+A cross platform mobile application created with flutter to connect beauty service providers with their customers inclusive of payment processing.
